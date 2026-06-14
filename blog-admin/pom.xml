@@ -15,6 +15,11 @@
         <version>2.3.9</version>
     </parent>
 
+    <properties>
+        <!-- 父 POM 默认 skip 测试以避开依赖外部环境的历史集成测试；本模块新增 ShiroRealm 单元测试，开启执行 -->
+        <maven.test.skip>false</maven.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.zyd</groupId>
@@ -61,6 +66,16 @@
                         <delimiter>@</delimiter>
                     </delimiters>
                     <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- 仅运行 ShiroRealm 单元测试，跳过需要完整 Spring 上下文的历史集成测试 -->
+                    <includes>
+                        <include>**/ShiroRealmTest.java</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>

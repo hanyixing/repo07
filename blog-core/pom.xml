@@ -15,6 +15,11 @@
         <version>2.3.9</version>
     </parent>
 
+    <properties>
+        <!-- 父 POM 默认 skip 测试以避开依赖外部环境的历史集成测试；本模块新增纯单元测试，开启执行 -->
+        <maven.test.skip>false</maven.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -225,4 +230,21 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 仅运行本次新增的单元测试，避免触发依赖数据库/网络的历史测试 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/BizArticleServiceImplTest.java</include>
+                        <include>**/BizCommentServiceImplTest.java</include>
+                        <include>**/BizTagsServiceImplTest.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
