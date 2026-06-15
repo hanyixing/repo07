@@ -1,7 +1,7 @@
 # Server settings
 server:
     tomcat:
-        basedir: /var/tmp/oneblog/blog-admin
+        basedir: /var/tmp/oneblog/blog-web
 # SPRING PROFILES
 spring:
     profiles:
@@ -14,21 +14,22 @@ logging:
       path: /var/tmp/oneblog/logs
     level:
       root: INFO
-      com.zyd: DEBUG
+      com.zyd: INFO
+
+# braum过滤器，用于过滤恶意请求
+braum:
+  limit:
+      access:
+          type: redis
+          threshold: 50
+          interval: 5000
 
 ####################################自定义配置##########################################
 app:
-    # 开发环境启用验证码
+    # 测试环境关闭验证码
     enableKaptcha: ${ONEBLOG_APP_ENABLE_KAPTCHA:false}
-    # 开发环境不自动检查友情链接
-    enableAutoCheckLink: ${ONEBLOG_APP_ENABLE_CHECK_LINK:false}
-    # 开发环境可以打印配置信息（方便调试）
-    enabledPrintConfig: ${ONEBLOG_APP_ENABLE_PRINT_CONFIG:true}
-    # 开发环境关闭 redis 缓存
+    # 测试环境不打印配置信息
+    enabledPrintConfig: ${ONEBLOG_APP_ENABLE_PRINT_CONFIG:false}
+    # 测试环境关闭 redis 缓存
     enableRedisCache: ${ONEBLOG_ENABLE_REDIS_CACHE:false}
-    # shiro配置项
-    shiro:
-        loginUrl: "/passport/login/"
-        successUrl: "/"
-        unauthorizedUrl: "/error/403"
 ####################################自定义配置##########################################

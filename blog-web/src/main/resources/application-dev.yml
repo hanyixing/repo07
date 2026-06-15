@@ -12,20 +12,24 @@ logging:
     config: classpath:logback-spring.xml
     file:
       path: /var/tmp/oneblog/logs
+    level:
+      root: INFO
+      com.zyd: DEBUG
 
 # braum过滤器，用于过滤恶意请求
 braum:
   limit:
       access:
           type: redis
-          threshold: 30
+          threshold: 100
           interval: 5000
 
 ####################################自定义配置##########################################
 app:
-    # 是否启用kaptcha验证码
+    # 开发环境关闭验证码
     enableKaptcha: ${ONEBLOG_APP_ENABLE_KAPTCHA:false}
-    # 启用后，项目在启动时会打印数据库（Mysql和Redis）链接信息（包含密码）
-    # 代码请参考
-    enabledPrintConfig: ${ONEBLOG_APP_ENABLE_PRINT_CONFIG:false}
+    # 开发环境可以打印配置信息（方便调试）
+    enabledPrintConfig: ${ONEBLOG_APP_ENABLE_PRINT_CONFIG:true}
+    # 开发环境关闭 redis 缓存
+    enableRedisCache: ${ONEBLOG_ENABLE_REDIS_CACHE:false}
 ####################################自定义配置##########################################

@@ -1,20 +1,60 @@
-# 环境版本
-FROM anolis-registry.cn-zhangjiakou.cr.aliyuncs.com/openanolis/openjdk:8-8.6
+# ============== 第一阶段：构建阶段 ==============
+FROM maven:3.8-openjdk-8-slim AS builder
 
-MAINTAINER yadong.zhang0415@gmail.com
+WORKDIR /build
 
-# JVM调优参数等额外参数
-ENV PARAMS ""
+# 先复制 pom.xml 以利用 Docker 缓存层
+COPY pom.xml .
+COPY blog-core/pom.xml blog-core/
+COPY blog-admin/pom.xml blog-admin/
+COPY blog-web/pom.xml blog-web/
+COPY blog-file/pom.xml blog-file/
+COPY blog-codegen/pom.xml blog-codegen/
 
-ENV TZ=PRC
+# 下载依赖（利用 Docker 缓存）
+RUN mvn dependency:go-offline -B
 
+# 复制源代码
+COPY . .
+
+# 构建项目
+RUN mvn clean package -DskipTests -Pprod
+
+# ============== 第二阶段：运行阶段 ==============
+FROM openjdk:8-jre-slim
+
+LABEL maintainer="yadong.zhang0415@gmail.com"
+LABEL description="OneBlog Web Service"
+
+# 设置时区
+ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 指定容器端口
-EXPOSE 8085
+# 创建非 root 用户运行应用（安全最佳实践）
+RUN groupadd -r oneblog && useradd -r -g oneblog -u 1001 oneblog
 
-# 添加本地 JAR 到容器内
-ADD target/blog-web.jar app.jar
+# JVM 调优参数
+ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+ENV PARAMS=""
+ENV SPRING_PROFILES_ACTIVE="prod"
 
-# 容器启动后执行的命令
-ENTRYPOINT ["java", "-jar","app.jar" , "-Djava.security.egd=file:/dev/./urandom","$PARAMS"]
+WORKDIR /app
+
+# 从构建阶段复制 JAR 文件
+COPY --from=builder /build/blog-web/target/blog-web.jar app.jar
+
+# 修改文件所有者
+RUN chown -R oneblog:oneblog /app
+
+# 切换到非 root 用户
+USER oneblog
+
+# 暴露端口
+EXPOSE 8443
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8443/actuator/health || exit 1
+
+# 启动命令
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar --spring.profiles.active=$SPRING_PROFILES_ACTIVE $PARAMS"]

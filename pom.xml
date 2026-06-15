@@ -115,7 +115,7 @@
 
     <!-- Maven控制Spring Profile -->
     <profiles>
-        <!--默认开启dev-->
+        <!--开发环境-->
         <profile>
             <id>dev</id>
             <activation>
@@ -125,7 +125,26 @@
                 <profileActive>dev</profileActive>
             </properties>
             <build>
-                <!-- 产生的构件的文件名，默认值是${artifactId}-${version}-->
+                <finalName>${project.artifactId}</finalName>
+            </build>
+        </profile>
+        <!--测试环境-->
+        <profile>
+            <id>test</id>
+            <properties>
+                <profileActive>test</profileActive>
+            </properties>
+            <build>
+                <finalName>${project.artifactId}</finalName>
+            </build>
+        </profile>
+        <!--生产环境-->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profileActive>prod</profileActive>
+            </properties>
+            <build>
                 <finalName>${project.artifactId}</finalName>
             </build>
         </profile>

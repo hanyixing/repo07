@@ -25,3 +25,38 @@ hs_err_pid*
 /logdir_IS_UNDEFINED/
 /blog-codegen/generator-output/
 */target/
+
+# ==================== 敏感配置文件 ====================
+# 生产环境配置文件（包含数据库密码、Redis密码等敏感信息）
+**/application-prod.yml
+
+# Docker 环境变量文件（包含密码等敏感信息）
+**/docs/docker/.env
+**/.env.local
+**/.env.production
+
+# 其他敏感文件
+**/credentials.json
+**/secrets.yml
+**/*.pem
+**/*.key
+
+# ==================== IDE 和工具 ====================
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS 文件
+.DS_Store
+Thumbs.db
+
+# ==================== 部署相关 ====================
+# 部署日志
+**/deploy-logs/
+**/health-monitor.pid
+
+# 备份文件
+**/backups/
