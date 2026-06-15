@@ -1,0 +1,35 @@
+# Server settings
+server:
+    tomcat:
+        basedir: /var/tmp/oneblog/blog-web
+# SPRING PROFILES
+spring:
+    profiles:
+        include: [center]
+
+# logging settings
+logging:
+    config: classpath:logback-spring.xml
+    file:
+      path: /var/tmp/oneblog/logs
+    level:
+      root: WARN
+      com.zyd: INFO
+
+# braum过滤器，用于过滤恶意请求
+braum:
+  limit:
+      access:
+          type: redis
+          threshold: 30
+          interval: 5000
+
+####################################自定义配置##########################################
+app:
+    # 是否启用kaptcha验证码
+    enableKaptcha: ${ONEBLOG_APP_ENABLE_KAPTCHA:false}
+    # 生产环境务必关闭启动时打印数据库连接信息（含密码），避免敏感信息泄露
+    enabledPrintConfig: ${ONEBLOG_APP_ENABLE_PRINT_CONFIG:false}
+    # 生产环境默认开启 redis 切面缓存以提升性能
+    enableRedisCache: ${ONEBLOG_ENABLE_REDIS_CACHE:true}
+####################################自定义配置##########################################

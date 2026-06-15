@@ -59,8 +59,13 @@
 				<configuration>
 					<mainClass>com.zyd.blog.BlogWebApplication</mainClass>
 					<layout>JAR</layout>
-                    <!--构建完整可执行程序，可以直接运行-->
-                    <executable>true</executable>
+                    <!-- 分层 jar 与“完整可执行(launch script)”不兼容(layertools extract 会拒绝)；
+                         Docker 与脚本均以 java -jar 启动，故关闭 executable -->
+                    <executable>false</executable>
+					<!-- 启用分层 jar，配合 Docker 多阶段构建做镜像层缓存 -->
+					<layers>
+						<enabled>true</enabled>
+					</layers>
 				</configuration>
 			</plugin>
 		</plugins>
